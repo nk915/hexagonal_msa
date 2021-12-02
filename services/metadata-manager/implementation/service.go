@@ -3,10 +3,16 @@ package implementation
 import (
 	"errors"
 
-	"github.com/nk915/k8s_msa_example/services/data"
+	"local-testing.com/nk915/data"
 )
 
 var ErrEmpty = errors.New("empty string")
+
+type service struct{}
+
+func NewService() *service {
+	return &service{}
+}
 
 func (s *data.SaasService) GetSaasInfo(_key string) (string, error) {
 	if _key == "" {

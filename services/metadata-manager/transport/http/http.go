@@ -10,9 +10,9 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 
-	"github.com/nk915/k8s_msa_example/services/data"
-	"github.com/nk915/k8s_msa_example/services/endpoint"
-	"github.com/nk915/k8s_msa_example/services/implemention"
+	"local-testing.com/nk915/data"
+	"local-testing.com/nk915/endpoint"
+	"local-testing.com/nk915/implementation"
 )
 
 var (
@@ -81,7 +81,7 @@ func encodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 
 func codeFrom(err error) int {
 	switch err {
-	case implemention.ErrEmpty:
+	case implementation.ErrEmpty:
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError

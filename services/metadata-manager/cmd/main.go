@@ -1,23 +1,37 @@
 package main
 
 import (
+	"flag"
+	"net/http"
 	"os"
 	"time"
 
-	"github.com/go-kit/kit/log"
+	kitlog "github.com/go-kit/kit/log"
+	kitlevel "github.com/go-kit/kit/log/level"
+	usrsvc "local-testing.com/nk915/implementation"
+	nkhttp "local-testing.com/nk915/transport/http"
 )
 
 func main() {
-	
-	
-	var logger log.Logger
-	(
-		logger = log.NewLogfmtLogger(os.Stdout)
-		logger = log.With(logger, 
-			"time", time.Now().Format("2006-01-02 15:04:05"), 
-			"caller", log.DefaultCaller)
+	var (
+		httpAddr = flag.String("http.addr", ":8080", "HTTP listen address")
 	)
 
+	var logger kitlog.Logger
+	{
+		logger = kitlog.NewLogfmtLogger(os.Stdout)
+		logger = kitlevel.NewFilter(logger, kitlevel.AllowDebug())
+		logger = kitlog.With(logger,
+			"time", time.Now().Format("2006-01-02 15:04:05"),
+			"caller", kitlog.DefaultCaller)
+	}
 
-	logger.Log("call", "first")
+	//logger.Log("call", "first")
+	kitlevel.Info(logger).Log("msg", "service started")
+	defer kitlevel.Info(logger).Log("msg", "service ended")
+
+	r := nkhttp.NewHttpServer(usrsvc.NewService(), logger)
+
+	kitlevel.Error(logger).Log("transport", http.ListenAndServe(*httpAddr, r))
+
 }

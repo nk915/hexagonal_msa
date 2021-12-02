@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 
-	"github.com/nk915/k8s_msa_example/services/data"
+	"local-testing.com/nk915/data"
 )
 
 func makeGetSaasInfoEndpoint(_svc data.ISaasService) endpoint.Endpoint {
