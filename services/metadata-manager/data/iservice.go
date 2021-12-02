@@ -1,9 +1,9 @@
 package data
 
 type ISaasService interface {
-	GetSaasInfo(string) (string, error)
+	GetSaasByID(string) (string, error)
 }
 
 type SaasService struct {
-	//ID, AccessKey, SecretKey string
+	ID, AccessKey, SecretKey string
 }

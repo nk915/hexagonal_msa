@@ -14,7 +14,7 @@ func NewService() *service {
 	return &service{}
 }
 
-func (s *data.SaasService) GetSaasInfo(_key string) (string, error) {
+func (s *service) GetSaasByID(_key string) (data.SaasService, error) {
 	if _key == "" {
 		return "", ErrEmpty
 	}

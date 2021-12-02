@@ -35,7 +35,7 @@ func NewHttpServer(_svc data.ISaasService, _logger kitlog.Logger) *mux.Router {
 
 	// HTTP Get - /services/{id}
 	r.Methods("GET").Path("/services/{id}").Handler(kithttp.NewServer(
-		endpoint.makeGetSaasInfoEndpoint(_svc),
+		endpoint.makeGetSaasByIDEndpoint(_svc),
 		decodeGetSaasServiceRequest,
 		encodeResponse,
 		options...,

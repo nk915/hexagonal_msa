@@ -8,10 +8,10 @@ import (
 	"local-testing.com/nk915/data"
 )
 
-func makeGetSaasInfoEndpoint(_svc data.ISaasService) endpoint.Endpoint {
+func makeGetSaasByIDEndpoint(_svc data.ISaasService) endpoint.Endpoint {
 	return func(_ctx context.Context, _request interface{}) (interface{}, error) {
 		req := _request.(SaasServiceRequest)
-		saasInfo, err := _svc.GetSaasInfo(_ctx, req.Id)
+		saasInfo, err := _svc.GetSaasByID(_ctx, req.Id)
 
 		if err != nil {
 			return SaasServiceResponse{"", err.Error()}, err
