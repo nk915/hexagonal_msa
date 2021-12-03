@@ -8,7 +8,7 @@ import (
 
 	kitlog "github.com/go-kit/kit/log"
 	kitlevel "github.com/go-kit/kit/log/level"
-	usrsvc "local-testing.com/nk915/implementation"
+	imple "local-testing.com/nk915/implementation"
 	nkhttp "local-testing.com/nk915/transport/http"
 )
 
@@ -30,8 +30,9 @@ func main() {
 	kitlevel.Info(logger).Log("msg", "service started")
 	defer kitlevel.Info(logger).Log("msg", "service ended")
 
-	r := nkhttp.NewHttpServer(usrsvc.NewService(), logger)
+	// Create SaaS Service
+	svc := imple.NewService(logger)
 
+	r := nkhttp.NewHttpServer(svc, logger)
 	kitlevel.Error(logger).Log("transport", http.ListenAndServe(*httpAddr, r))
-
 }

@@ -3,29 +3,38 @@ package endpoint
 import (
 	"context"
 
-	"github.com/go-kit/kit/endpoint"
-
-	"local-testing.com/nk915/data"
+	kitendpoint "github.com/go-kit/kit/endpoint"
+	imple "local-testing.com/nk915/implementation"
 )
 
-func makeGetSaasByIDEndpoint(_svc data.ISaasService) endpoint.Endpoint {
-	return func(_ctx context.Context, _request interface{}) (interface{}, error) {
-		req := _request.(SaasServiceRequest)
-		saasInfo, err := _svc.GetSaasByID(_ctx, req.Id)
+//// Endpoints holds all Go kit enpoints for the SaaS Service.
+//func Endpoints struct {
+//	Create 	kitendpoint.Endpoint
+//	GetByID	kitendpoint.Endpoint
+//}
+//
+//// MakeEndpoints initializes all Go kit endpoints for the SaaS Service.
+//func MakeEndpoints(svc imple.Service) Endpoints {
+//	return Endpoints{
+//		Create:		makeCreateEndpoint(svc),
+//		GetByID:	makeGetByIDEndpoints(svc),
+//	}
+//}
 
-		if err != nil {
-			return SaasServiceResponse{"", err.Error()}, err
-		}
-		return SaasServiceResponse{saasInfo, ""}, err
+// HTTP POST: Create Endpoint
+func MakeCreateEndpoint(svc imple.Service) kitendpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(CreateRequest)
+		id, err := svc.Create(ctx, req.SaaS)
+		return CreateResponse{ID: id, Err: err}, nil
 	}
 }
 
-type SaasServiceRequest struct {
-	Id string `json:"id"`
-}
-
-type SaasServiceResponse struct {
-	Id    string `json:"id"`
-	Email string `json:"id"`
-	Tmp   string `json:"id"`
+// HTTP GET: GetByID Endpoint
+func MakeGetByIDEndpoints(svc imple.Service) kitendpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(GetByIDRequest)
+		saasRes, err := svc.GetByID(ctx, req.ID)
+		return GetByIDResponse{SaaS: saasRes, Err: err}, nil
+	}
 }

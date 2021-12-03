@@ -10,21 +10,20 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 
-	"local-testing.com/nk915/data"
-	"local-testing.com/nk915/endpoint"
-	"local-testing.com/nk915/implementation"
+	ep "local-testing.com/nk915/endpoint"
+	imple "local-testing.com/nk915/implementation"
 )
 
 var (
 	ErrBadRouting = errors.New("bad routing")
 )
 
-func NewHttpServer(_svc data.ISaasService, _logger kitlog.Logger) *mux.Router {
+func NewHttpServer(svc imple.Service, logger kitlog.Logger) *mux.Router {
 
 	// set-up router and initialize http endpoints
 	var (
 		r            = mux.NewRouter()
-		errorLoger   = kithttp.ServerErrorLogger(_logger)
+		errorLoger   = kithttp.ServerErrorLogger(logger)
 		errorEncoder = kithttp.ServerErrorEncoder(encodeErrorResponse)
 	)
 
@@ -35,23 +34,30 @@ func NewHttpServer(_svc data.ISaasService, _logger kitlog.Logger) *mux.Router {
 
 	// HTTP Get - /services/{id}
 	r.Methods("GET").Path("/services/{id}").Handler(kithttp.NewServer(
-		endpoint.makeGetSaasByIDEndpoint(_svc),
-		decodeGetSaasServiceRequest,
+		ep.MakeGetByIDEndpoints(svc),
+		decodeGetByIDRequest,
 		encodeResponse,
 		options...,
 	))
 
+	// TODO: POST CreateSaaS
+	//r.Methods("POST")
+
 	return r
 }
 
-func decodeGetSaasServiceRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeGetByIDRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
+
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	return endpoint.SaasServiceRequest{Id: id}, nil
+	return ep.GetByIDRequest{ID: id}, nil
 }
+
+// TODO: decodeCreateRequest
+// TODO: decodeUpdateRequest
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	if e, ok := response.(errorer); ok && e.error() != nil {
@@ -81,7 +87,7 @@ func encodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 
 func codeFrom(err error) int {
 	switch err {
-	case implementation.ErrEmpty:
+	case imple.ErrEmpty:
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
