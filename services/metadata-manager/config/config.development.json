@@ -1,0 +1,6 @@
+{
+	"Port": 8080,
+	"LogSetting": {
+		"Level": "Debug"
+	}
+}

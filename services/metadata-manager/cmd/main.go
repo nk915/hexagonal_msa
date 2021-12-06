@@ -2,21 +2,44 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
 	kitlevel "github.com/go-kit/kit/log/level"
+	gonfig "local-testing.com/nk915/config"
 	imple "local-testing.com/nk915/implementation"
 	nkhttp "local-testing.com/nk915/transport/http"
 )
 
-func main() {
-	var (
-		httpAddr = flag.String("http.addr", ":8080", "HTTP listen address")
-	)
+type Config struct {
+	Port       int
+	LogSetting map[string]interface{}
+}
 
+func main() {
+
+	// Configure Load
+	config := Config{}
+	err := gonfig.GetConf(getFileName(), &config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(500)
+	}
+	if config.Port == 0 {
+		fmt.Println("Not found: Port ")
+		os.Exit(500)
+	}
+	port := ":" + strconv.Itoa(config.Port)
+
+	// Settings Logger
 	var logger kitlog.Logger
 	{
 		logger = kitlog.NewLogfmtLogger(os.Stdout)
@@ -31,8 +54,25 @@ func main() {
 	defer kitlevel.Info(logger).Log("msg", "service ended")
 
 	// Create SaaS Service
+	var (
+		httpAddr = flag.String("http.addr", port, "HTTP listen address")
+	)
 	svc := imple.NewService(logger)
-
 	r := nkhttp.NewHttpServer(svc, logger)
 	kitlevel.Error(logger).Log("transport", http.ListenAndServe(*httpAddr, r))
+}
+
+func getFileName() string {
+	env := os.Getenv("ENV")
+
+	if len(env) == 0 {
+		env = "development"
+	}
+
+	filename := []string{"../config/", "config.", env, ".json"}
+	_, dirname, _, _ := runtime.Caller(0)
+	filepath := path.Join(filepath.Dir(dirname), strings.Join(filename, ""))
+
+	fmt.Println("--> Configure File Path: ", filepath)
+	return filepath
 }
