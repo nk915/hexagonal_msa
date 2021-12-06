@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -32,7 +33,7 @@ func NewHttpServer(svc imple.Service, logger kitlog.Logger) *mux.Router {
 		errorEncoder,
 	}
 
-	// HTTP Get - /services/{id}
+	// HTTP GET - /services/{id}
 	r.Methods("GET").Path("/services/{id}").Handler(kithttp.NewServer(
 		ep.MakeGetByIDEndpoints(svc),
 		decodeGetByIDRequest,
@@ -40,8 +41,13 @@ func NewHttpServer(svc imple.Service, logger kitlog.Logger) *mux.Router {
 		options...,
 	))
 
-	// TODO: POST CreateSaaS
-	//r.Methods("POST")
+	// HTTP POST - /services
+	r.Methods("POST").Path("/services").Handler(kithttp.NewServer(
+		ep.MakeCreateEndpoint(svc),
+		decodeCreateRequest,
+		encodeResponse,
+		options...,
+	))
 
 	return r
 }
@@ -56,9 +62,17 @@ func decodeGetByIDRequest(_ context.Context, r *http.Request) (request interface
 	return ep.GetByIDRequest{ID: id}, nil
 }
 
-// TODO: decodeCreateRequest
-// TODO: decodeUpdateRequest
+func decodeCreateRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req ep.CreateRequest
+	fmt.Println("TEST TEST", r.Body)
+	if e := json.NewDecoder(r.Body).Decode(&req.SaaS); e != nil {
+		return nil, e
+	}
+	fmt.Println("TEST TEST", req)
+	return req, nil
+}
 
+// TODO: decodeUpdateRequest
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	if e, ok := response.(errorer); ok && e.error() != nil {
 		// Not a Go kit transport error, but a business-logic error.

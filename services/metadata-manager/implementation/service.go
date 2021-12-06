@@ -40,9 +40,10 @@ func (s *service) Create(ctx context.Context, saas models.SaaS) (string, error) 
 	uuid, _ := uuid.NewV4()
 	id := uuid.String()
 
-	// TODO: 임시 로그
 	// TODO: CreateSaas 함수 호출 필요
 	kitlevel.Info(logger).Log("info", "Call by Create : SaaS")
+	kitlevel.Info(logger).Log("info", "Create (SaaS ID) : "+saas.ID)
+	kitlevel.Info(logger).Log("info", "Create (SaaS Status) : "+saas.Status)
 
 	return id, nil
 }

@@ -50,8 +50,8 @@ func main() {
 	}
 
 	//logger.Log("call", "first")
-	kitlevel.Info(logger).Log("msg", "service started")
-	defer kitlevel.Info(logger).Log("msg", "service ended")
+	kitlevel.Info(logger).Log("msg", "--> service started")
+	defer kitlevel.Info(logger).Log("msg", "--> service ended")
 
 	// Create SaaS Service
 	var (
