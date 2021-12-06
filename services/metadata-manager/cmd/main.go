@@ -63,7 +63,7 @@ func main() {
 }
 
 func getFileName() string {
-	env := os.Getenv("ENV")
+	env := os.Getenv("APPENV")
 
 	if len(env) == 0 {
 		env = "development"

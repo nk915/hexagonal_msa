@@ -1,3 +1,6 @@
 {
-	"Port": 80
+	"Port": 80,
+	"LogSetting": {
+		"Level": "Info"
+	}
 }
