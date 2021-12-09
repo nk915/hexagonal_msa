@@ -10,13 +10,14 @@ import (
 	kitlevel "github.com/go-kit/log/level"
 
 	"local-testing.com/nk915/models"
+	//svc "local-testing.com/nk915/repo"
 )
 
 var ErrEmpty = errors.New("empty string")
 
 // service implements the SaaS Service
 type service struct {
-	//repository repo.Repository
+	//	repository svc.Repository
 	logger kitlog.Logger
 }
 
