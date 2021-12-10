@@ -24,7 +24,7 @@ func New(db *sql.DB, logger kitlog.Logger) (Repository, error) {
 
 func (repo *repository) InitTable() error {
 	tables := []string{
-		`CREATE TABLE saas (id TEXT, status TEXT);`,
+		`CREATE TABLE IF NOT EXISTS saas (id TEXT, status TEXT);`,
 		//`CREATE TABLE user_addresses (address_id INT, user_id INT);`,
 	}
 

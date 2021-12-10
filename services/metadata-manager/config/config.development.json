@@ -1,8 +1,7 @@
 {
 	"Env" : "Development",
 	"Database": {
-		"Engine": "ramsql",
-		"Connect": "TestInMemDB"
+		"Host": "TestInMemDB"
 	},
 	"Port": 8080,
 	"LogSetting": {

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/lib/pq"
 	_ "github.com/proullon/ramsql/driver"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -65,7 +66,15 @@ func main() {
 	{
 		var err error
 		if config.Env == "Development" {
-			db, err = sql.Open("ramsql", "InMemDB")
+			db, err = sql.Open("ramsql", config.Database["Host"].(string))
+			if err != nil {
+				kitlevel.Error(logger).Log("repo", err)
+				os.Exit(-1)
+			}
+		} else if config.Env == "Production" {
+			psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+				config.Database["Host"], config.Database["Port"], config.Database["User"], config.Database["Password"], config.Database["DbName"])
+			db, err = sql.Open("postgres", psqlconn)
 			if err != nil {
 				kitlevel.Error(logger).Log("repo", err)
 				os.Exit(-1)
@@ -74,10 +83,6 @@ func main() {
 			kitlevel.Error(logger).Log("repo", "--> Env Fail")
 			os.Exit(500)
 		}
-		// TODO: Production Setting
-		//	else if config.Env == "Production" {
-		//		db, err = sql.Open()
-		//	}
 	}
 
 	repository, err := svcdb.New(db, logger)

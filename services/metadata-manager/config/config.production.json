@@ -1,8 +1,12 @@
 {
 	"Env" : "Production",
 	"Database": {
-		"Engine": "postgres",
-		"Connect": "postgresql://~~~~"
+		"Host": "",
+		"Port": "5432",
+		"User": "postgres",
+		"Password": "",
+		"DbName": ""
+
 	},
 	"Port": 80,
 	"LogSetting": {
