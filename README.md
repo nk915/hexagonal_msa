@@ -1,2 +1,4 @@
-# k8s_msa_example
-k8s 및 go msa 구조 연습용 레포지터리
+# Hexagonal_MSA
+k8s 및 go msa 구조 스터디 및 개발 익히기
+
+
