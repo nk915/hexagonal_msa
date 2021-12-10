@@ -2,61 +2,67 @@ package implementation
 
 import (
 	"context"
+	"database/sql"
 	"errors"
-
-	"github.com/gofrs/uuid"
 
 	kitlog "github.com/go-kit/kit/log"
 	kitlevel "github.com/go-kit/log/level"
 
 	"local-testing.com/nk915/models"
-	//svc "local-testing.com/nk915/repo"
+	svc "local-testing.com/nk915/repo"
 )
 
 var ErrEmpty = errors.New("empty string")
 
 // service implements the SaaS Service
 type service struct {
-	//	repository svc.Repository
-	logger kitlog.Logger
+	repository svc.Repository
+	logger     kitlog.Logger
 }
 
-// TODO: repo add
-func NewService(logger kitlog.Logger) *service {
+func NewService(rep svc.Repository, logger kitlog.Logger) Service {
 	return &service{
-		logger: logger,
+		repository: rep,
+		logger:     logger,
 	}
 }
-
-//func NewService(rep repo.Repository, logger kitlog.Logger) Service {
-//	return &service{
-//		repository: rep,
-//		logger:     logger,
-//	}
-//}
 
 // Create makes on SaaS
 func (s *service) Create(ctx context.Context, saas models.SaaS) (string, error) {
 	logger := kitlog.With(s.logger, "method", "Create")
-	uuid, _ := uuid.NewV4()
-	id := uuid.String()
+	//	uuid, _ := uuid.NewV4()
+	//	id := uuid.String()
 
-	// TODO: CreateSaas 함수 호출 필요
+	if err := s.repository.CreateSaas(ctx, saas); err != nil {
+		kitlevel.Error(logger).Log("err", err)
+		return "", ErrCmdRepository
+	}
+
+	// TODO: 추후 제거
 	kitlevel.Info(logger).Log("info", "Call by Create : SaaS")
 	kitlevel.Info(logger).Log("info", "Create (SaaS ID) : "+saas.ID)
 	kitlevel.Info(logger).Log("info", "Create (SaaS Status) : "+saas.Status)
-
-	return id, nil
+	return saas.ID, nil
 }
 
 // GetByID returns on saas given by id
 func (s *service) GetByID(ctx context.Context, id string) (models.SaaS, error) {
 	logger := kitlog.With(s.logger, "method", "GetByID")
 
-	// TODO: CreateSaas 함수 호출 필요
+	// TODO: 추후 제거
 	kitlevel.Info(logger).Log("Debug", "Call by GetByID : ", id)
 
-	return models.SaaS{ID: "kng", Status: "on"}, nil
+	saas, err := s.repository.GetSaasByID(ctx, id)
+	if err != nil {
+		kitlevel.Error(logger).Log("err", err)
+		if err == sql.ErrNoRows {
+			return saas, ErrSaasNotFound
+		}
+		return saas, ErrQueryRepository
+	}
+
+	return saas, nil
+	// return models.SaaS{ID: "kng", Status: "on"}, nil
 }
 
 // Update makes on SaaS

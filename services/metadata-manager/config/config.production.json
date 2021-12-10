@@ -1,4 +1,9 @@
 {
+	"Env" : "Production",
+	"Database": {
+		"Engine": "postgres",
+		"Connect": "postgresql://~~~~"
+	},
 	"Port": 80,
 	"LogSetting": {
 		"Level": "Info"

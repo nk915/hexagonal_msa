@@ -1,4 +1,9 @@
 {
+	"Env" : "Development",
+	"Database": {
+		"Engine": "ramsql",
+		"Connect": "TestInMemDB"
+	},
 	"Port": 8080,
 	"LogSetting": {
 		"Level": "Debug"

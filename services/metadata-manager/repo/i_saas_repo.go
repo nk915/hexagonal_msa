@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	InitTable(ctx context.Context) error
+	InitTable() error
 	CreateSaas(ctx context.Context, saas models.SaaS) error
 	UpdateSaas(ctx context.Context, saas models.SaaS) error
 	GetSaasByID(ctx context.Context, id string) (models.SaaS, error)
